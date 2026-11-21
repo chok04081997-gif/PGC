@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>蒲种福音堂</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#f6f7f4; --surface:#ffffff; --soft:#eef1ec; --line:#d9dfd6;
+  --ink:#16201a; --muted:#56635a;
+  --primary:#1f5b42; --on-primary:#ffffff; --primary-soft:#e3f0e8;
+  --warn:#c5221f; --warn-soft:#fdeceb; --ok:#186a3b; --ok-soft:#e5f4ea; --amber:#b7791f; --amber-soft:#fff6df;
+  --font:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif; --fs:16px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#101612; --surface:#18201b; --soft:#222c26; --line:#33403a; --ink:#f1f4f1; --muted:#b2bdb5;
+  --primary:#8ccfb0; --on-primary:#0e2a1d; --primary-soft:#1b4330;
+  --warn:#ff9b95; --warn-soft:#3a1f1e; --ok:#7fd6a3; --ok-soft:#173326; --amber:#f3c669; --amber-soft:#35290f; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:var(--fs);line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body.big{--fs:19px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+header.top{display:flex;align-items:center;gap:10px;padding:14px 0 10px}
+.brand{flex:1;min-width:0}
+.brand b{display:block;font-size:1.2em;line-height:1.2}
+.brand span{font-size:.8em;color:var(--muted)}
+.icon-btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;min-width:44px;height:44px;padding:0 12px}
+main{flex:1;padding-bottom:96px;display:flex;flex-direction:column;gap:14px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:6;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:4px}
+nav.tabs button{border:0;background:none;border-radius:12px;padding:6px 0;font-size:.85em;color:var(--muted);min-height:50px}
+nav.tabs button[aria-current="page"]{color:var(--primary);background:var(--primary-soft);font-weight:700}
+h2{font-size:1.2em;margin:6px 0 0}
+.sub{color:var(--muted);font-size:.88em;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.card.alert{border-color:var(--amber);background:var(--amber-soft)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.sp{justify-content:space-between}
+.grow{flex:1;min-width:0}
+.pill{display:inline-flex;align-items:center;border-radius:99px;padding:2px 10px;font-size:.8em;font-weight:500;background:var(--soft);color:var(--muted);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.pend{background:var(--amber-soft);color:var(--amber)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;min-height:44px;padding:8px 16px;font-weight:500}
+.btn.pri{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-weight:700}
+.btn.bad{color:var(--warn);border-color:var(--warn)}
+.btn.sm{min-height:38px;padding:4px 12px;font-size:.9em}
+.btn[disabled]{opacity:.5;cursor:default}
+.meta{color:var(--muted);font-size:.88em}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:700;flex:none}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:90%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-weight:500;font-size:.92em}
+input,select,textarea{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;z-index:30;max-width:90%;font-size:.92em}
+.info{display:grid;grid-template-columns:5.5em 1fr;gap:2px 10px;font-size:.92em}
+.info dt{color:var(--muted)} .info dd{margin:0;word-break:break-all}
+.chk{display:flex;flex-direction:row;align-items:center;gap:10px;padding:4px 0;font-weight:400}
+.chk input{width:24px;min-height:24px;flex:none}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 14px;min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-weight:700}
+.err{color:var(--warn);font-size:.9em}
+.center{text-align:center}
+.spin{padding:40px 0;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><b>蒲种福音堂</b><span id="whoami"></span></div>
+    <button class="icon-btn" id="btnBell" aria-label="通知" hidden style="position:relative">🔔<span id="bellDot" style="position:absolute;top:-6px;right:-6px;background:var(--warn);color:#fff;border-radius:99px;font-size:.7em;min-width:20px;height:20px;display:grid;place-items:center;padding:0 5px;font-weight:700" hidden></span></button>
+    <button class="icon-btn" id="btnSize" aria-label="切换大字模式" title="大字模式">Aa</button>
+  </header>
+  <main id="view"><div class="spin">载入中……</div></main>
+</div>
+<nav class="tabs" id="tabsWrap" hidden><div class="in" id="tabs"></div></nav>
+<div id="overlay"></div>
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+/* ============ 设定：这两个值可以公开（公开密钥），不要放任何秘密密钥 ============ */
+const SB_URL="https://zmtowoiqaugxkygdfhxq.supabase.co";
+const SB_KEY="sb_publishable_mPZ7EoSEeeahqL57hjMPHQ_ZxqDCCeZ";
+const AGES=["未成年（13–17岁）","青年（18–35岁）","壮年","乐龄长辈（65岁以上）"];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let toastT;
+function toast(t){const el=$("#toast");el.className="toast";el.textContent=t;clearTimeout(toastT);toastT=setTimeout(()=>{el.className="";el.textContent=""},3000)}
+
+/* ============ 连线到 Supabase（不依赖外部程序库） ============ */
+let SES=null;try{SES=JSON.parse(localStorage.getItem("pgc_ses")||"null")}catch(e){}
+function saveSes(s){SES=s;try{s?localStorage.setItem("pgc_ses",JSON.stringify(s)):localStorage.removeItem("pgc_ses")}catch(e){}}
+async function raw(path,o){
+  o=o||{};const h=Object.assign({apikey:SB_KEY,"Content-Type":"application/json"},o.headers||{});
+  if(o.token)h.Authorization="Bearer "+o.token;
+  const ac=new AbortController();const to=setTimeout(()=>ac.abort(),20000);
+  let r;try{r=await fetch(SB_URL+path,{method:o.method||"GET",headers:h,body:o.body!==undefined?JSON.stringify(o.body):undefined,signal:ac.signal})}
+  catch(e){clearTimeout(to);const er=new Error("network");er.code="network";throw er}
+  clearTimeout(to);
+  const t=await r.text();let j=null;try{j=t?JSON.parse(t):null}catch(e){j=t}
+  if(!r.ok){const er=new Error((j&&(j.msg||j.message||j.error_description||j.error))||("HTTP "+r.status));er.status=r.status;er.body=j;throw er}
+  return j;
+}
+function setSession(j){saveSes({access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000-60000,uid:(j.user&&j.user.id)||(SES&&SES.uid)})}
+let refreshing=null;
+async function token(){
+  if(!SES)throw new Error("no session");
+  if(Date.now()>SES.exp){
+    if(!refreshing)refreshing=raw("/auth/v1/token?grant_type=refresh_token",{method:"POST",body:{refresh_token:SES.refresh_token}}).then(setSession).finally(()=>{refreshing=null});
+    await refreshing;
+  }
+  return SES.access_token;
+}
+async function rest(path,o){o=o||{};o.token=await token();return raw("/rest/v1/"+path,o)}
+const sel=(t,q)=>rest(t+(q?"?"+q:""));
+const ins=(t,row,extra)=>rest(t,{method:"POST",body:row,headers:Object.assign({Prefer:"return=representation"},extra||{})});
+const upd=(t,filter,patch)=>rest(t+"?"+filter,{method:"PATCH",body:patch,headers:{Prefer:"return=representation"}});
+const del=(t,filter)=>rest(t+"?"+filter,{method:"DELETE"});
+const rpc=(fn,args)=>rest("rpc/"+fn,{method:"POST",body:args||{}});
+
+/* ============ 姓名 → 登入用的内部帐号 ============ */
+const normName=s=>String(s||"").normalize("NFKC").trim().replace(/\s+/g," ");
+async function emailFor(name){
+  const d=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(normName(name).toLowerCase()));
+  const hex=[...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,40);
+  return "u"+hex+"@gmail.com";
+}
+function friendly(e){
+  const m=String(e&&e.message||"");
+  if(e&&e.code==="network")return "连不上网络，请检查网络后再试";
+  if(/Invalid login credentials/i.test(m))return "姓名或密码不对";
+  if(/already registered|already been registered|Database error saving new user/i.test(m))return "这个姓名已经有人注册了。如果是同名的会友，请在姓名后面加上数字，例如「陈伟明2」";
+  if(/rate limit|too many|over_email_send_rate_limit/i.test(m)||(e&&e.status===429))return "操作太频繁，请稍等几分钟再试";
+  if(/not found|function.*(not|does)/i.test(m)&&e&&e.status===404)return "注册服务还没有启动，请联络总管";
+  if(/not signed in|admins only/i.test(m))return "没有权限，请重新登入";
+  if(/Password should be at least/i.test(m))return "密码至少要 8 个字";
+  if(/same password|different from the old/i.test(m))return "新密码不能和旧密码一样";
+  return "出错了："+m;
+}
+
+/* ============ 资料状态 ============ */
+let ME=null, PEOPLE=[], GM=[], PRIV={}, GROUPS=[], TAB="home", PENDING=[], SCHED=[], REASON={}, BLOCK=[], NOTES=[];
+const gname=id=>(GROUPS.find(g=>g.id===id)||{name:id}).name;
+const isAdmin=()=>ME&&ME.role==="admin";
+const person=id=>PEOPLE.find(p=>p.id===id);
+const idLabel=p=>p.identity==="elder"?"长老":p.identity==="board"?"理事":p.gender==="f"?"姐妹":p.gender==="m"?"弟兄":"会友";
+const postsOf=id=>GM.filter(x=>x.user_id===id&&x.post);
+const groupsOf=id=>GM.filter(x=>x.user_id===id);
+
+async function loadAll(){
+  const uid=SES.uid;
+  const me=await sel("profiles","id=eq."+uid+"&select=*");
+  ME=me[0]||null;
+  if(!ME||ME.status!=="active"){PEOPLE=[];GM=[];PRIV={};GROUPS=[];PENDING=[];SCHED=[];REASON={};BLOCK=[];NOTES=[];return}
+  const [pp,gm,pv,gs]=await Promise.all([sel("profiles","select=*&order=name.asc"),sel("group_members","select=*"),sel("member_private","select=*"),sel("groups","select=*&order=sort.asc")]);
+  PEOPLE=pp.filter(p=>p.status==="active");PENDING=pp.filter(p=>p.status==="pending");
+  GM=gm;GROUPS=gs;PRIV={};pv.forEach(r=>PRIV[r.user_id]=r);
+  const since=new Date(Date.now()-864e5).toISOString();
+  const [ss,rs,bl,nt]=await Promise.all([sel("schedules","select=*,assignments(*)&ends_at=gte."+since+"&order=starts_at.asc"),sel("assignment_reasons","select=*"),sel("blockouts","select=*"),sel("notifications","select=*&order=created_at.desc&limit=50")]);
+  SCHED=ss;REASON={};rs.forEach(r=>REASON[r.assignment_id]=r.reason);BLOCK=bl;NOTES=nt;
+}
+
+/* ============ 画面 ============ */
+function sheet(html){$("#overlay").innerHTML='<div class="sheet-bg" id="bg"><div class="sheet" role="dialog" aria-modal="true">'+html+'</div></div>';$("#bg").onclick=e=>{if(e.target.id==="bg")closeSheet()}}
+function closeSheet(){$("#overlay").innerHTML=""}
+document.addEventListener("click",e=>{if(e.target.closest("[data-close]"))closeSheet()});
+function busy(btn,on){if(btn){btn.disabled=on;if(on){btn.dataset.t=btn.textContent;btn.textContent="请稍等……"}else if(btn.dataset.t)btn.textContent=btn.dataset.t}}
+
+function vAuth(mode){
+  $("#whoami").textContent="";$("#tabsWrap").hidden=true;$("#btnBell").hidden=true;
+  const reg=mode==="reg";
+  $("#view").innerHTML='<div class="card"><div class="seg"><button id="mLogin" aria-pressed="'+(!reg)+'">登入</button><button id="mReg" aria-pressed="'+reg+'">新会友注册</button></div>'+
+   (reg?'<p class="sub">注册后，要等总管批准，才可以使用。</p>':'<p class="sub">请输入你的姓名和密码。</p>')+
+   '<label>姓名（中文或英文全名）<input id="a-name" autocomplete="username" maxlength="40"></label>'+
+   (reg?'<label>性别<select id="a-g"><option value="m">弟兄</option><option value="f">姐妹</option></select></label><label>年龄层<select id="a-age">'+AGES.map(a=>'<option>'+a+'</option>').join("")+'</select></label>':'')+
+   '<label>密码'+(reg?'（至少 8 个字）':'')+'<input id="a-pw" type="password" autocomplete="'+(reg?"new-password":"current-password")+'"></label>'+
+   (reg?'<label>再输入一次密码<input id="a-pw2" type="password" autocomplete="new-password"></label><div class="meta">如果有同名的会友，请在姓名后面加数字，例如「陈伟明2」，并告诉总管。</div>':'<div class="meta">忘记密码？请联络总管。</div>')+
+   '<div class="err" id="a-err" role="alert"></div><button class="btn pri" id="a-go">'+(reg?"送出申请":"登入")+'</button></div>';
+  $("#mLogin").onclick=()=>vAuth("login");$("#mReg").onclick=()=>vAuth("reg");
+  const go=async()=>{
+    const err=$("#a-err");err.textContent="";
+    const name=normName($("#a-name").value),pw=$("#a-pw").value;
+    if(!name){err.textContent="请填写姓名";return}
+    if(reg){if(pw.length<8){err.textContent="密码至少要 8 个字";return}if(pw!==$("#a-pw2").value){err.textContent="两次输入的密码不一样";return}}
+    else if(!pw){err.textContent="请填写密码";return}
+    const btn=$("#a-go");busy(btn,true);
+    try{
+      const email=await emailFor(name);
+      if(reg)await raw("/functions/v1/member-admin",{method:"POST",body:{action:"register",name,password:pw,gender:$("#a-g").value,age_group:$("#a-age").value}});
+      const j=await raw("/auth/v1/token?grant_type=password",{method:"POST",body:{email,password:pw}});
+      setSession(j);await start();
+    }catch(e){err.textContent=friendly(e);busy(btn,false)}
+  };
+  $("#a-go").onclick=go;
+  ["a-name","a-pw","a-pw2"].forEach(id=>{const el=$("#"+id);if(el)el.addEventListener("keydown",e=>{if(e.key==="Enter")go()})});
+}
+
+function vPending(){
+  $("#tabsWrap").hidden=true;$("#btnBell").hidden=true;
+  const removed=ME.status==="removed";
+  $("#view").innerHTML='<div class="card center"><h2>'+(removed?"这个帐号已停用":"申请已送出")+'</h2><p>'+(removed?"如有疑问，请联络总管。":"请等候总管批准。批准后，重新整理或再登入，就可以使用了。")+'</p>'+(removed?"":'<button class="btn pri" id="p-re">重新检查</button>')+'<button class="btn" id="p-out">登出</button></div>';
+  if(!removed)$("#p-re").onclick=async()=>{await start()};
+  $("#p-out").onclick=logout;
+}
+
+function nav(){
+  const tabs=[["home","首页"]];if(isWorker())tabs.push(["sched","时间表"]);tabs.push(["people","成员"],["me","我的资料"]);
+  $("#tabs").style.setProperty("--n",tabs.length);
+  const un=NOTES.filter(n=>!n.read_at).length,bd=$("#bellDot");$("#btnBell").hidden=false;bd.hidden=!un;bd.textContent=un;
+  $("#tabs").innerHTML=tabs.map(t=>'<button data-tab="'+t[0]+'"'+(TAB===t[0]?' aria-current="page"':'')+'>'+t[1]+(t[0]==="home"&&isAdmin()&&PENDING.length?' ('+PENDING.length+')':'')+'</button>').join("");
+  $("#tabsWrap").hidden=false;
+}
+function render(){
+  if(!ME){vAuth("login");return}
+  if(ME.status!=="active"){vPending();return}
+  $("#whoami").textContent=ME.name+" · "+idLabel(ME)+(isAdmin()?" · 总管":"");
+  nav();
+  if(TAB==="sched"&&!isWorker())TAB="home";
+  $("#view").innerHTML=TAB==="home"?vHome():TAB==="sched"?vSched():TAB==="people"?vPeople():vMe();
+  if(TAB==="people"){const s=$("#q");if(s)s.oninput=()=>{PQ=s.value;const pos=s.selectionStart;$("#plist").innerHTML=peopleList();}}
+}
+
+function pillsOf(p){
+  let h='<span class="pill">'+idLabel(p)+'</span>';
+  if(p.role==="admin")h+='<span class="pill ok">总管</span>';
+  postsOf(p.id).forEach(x=>h+='<span class="pill ok">'+esc(gname(x.group_id)+x.post)+'</span>');
+  return h;
+}
+function vHome(){
+  let h='<div class="card"><h2 style="margin:0">平安，'+esc(ME.name)+'</h2><div class="row">'+pillsOf(ME)+'</div><div class="meta">所属：'+(groupsOf(ME.id).length?esc(groupsOf(ME.id).map(x=>gname(x.group_id)).join("、")):"尚未分配群组，请联络总管")+'</div></div>';
+  if(isAdmin()){
+    h+='<div class="card'+(PENDING.length?' alert':'')+'"><b>新会友申请'+(PENDING.length?"（"+PENDING.length+"）":"")+'</b>';
+    h+=PENDING.length?PENDING.map(p=>'<div class="row sp"><div class="grow"><b>'+esc(p.name)+'</b><div class="meta">'+(p.gender==="f"?"姐妹":"弟兄")+" · "+esc(p.age_group||"")+'</div></div><button class="btn sm pri" data-approve="'+p.id+'">审核</button></div>').join(""):'<div class="meta">目前没有等候批准的申请。</div>';
+    h+='</div>';
+  }
+  if(isWorker()){const td=SCHED.filter(x=>activeS(x)&&dayKey(x.starts_at)===dayKey(Date.now()));
+    h+='<div class="card"><b>今天的服事</b>'+(td.length?td.map(x=>'<div><b>'+esc(x.title)+'</b> <span class="meta">'+fmtT(x.starts_at)+"–"+fmtT(x.ends_at)+'</span><div class="meta">'+live(x).slice().sort(byRole).map(a=>esc(a.role)+"："+esc(nameOf(a.user_id))).join("　")+'</div></div>').join(""):'<div class="meta">今天没有排班。</div>')+'</div>';}
+  h+='<div class="card"><b>系统状态</b><div class="meta">登入、成员管理、排班、代班和空档日期已经可以使用。近期得着、教会活动和意见箱会陆续加入。</div></div>';
+  return h;
+}
+let PQ="";
+function peopleList(){
+  const q=PQ.trim().toLowerCase();
+  const l=PEOPLE.filter(p=>!q||p.name.toLowerCase().includes(q)||(p.en_name||"").toLowerCase().includes(q));
+  return l.length?l.map(p=>'<button class="card" style="text-align:left;flex-direction:row;align-items:center" data-person="'+p.id+'"><div class="avatar">'+esc(p.name[0])+'</div><div class="grow"><b>'+esc(p.name)+'</b>'+(p.en_name?' <span class="meta">'+esc(p.en_name)+'</span>':'')+'<div class="row" style="margin-top:4px">'+pillsOf(p)+'</div></div></button>').join(""):'<div class="card meta">找不到符合的成员。</div>';
+}
+function vPeople(){
+  return '<div><h2>成员</h2><p class="sub">共 '+PEOPLE.length+' 位</p></div><input id="q" type="search" placeholder="搜寻姓名" value="'+esc(PQ)+'" aria-label="搜寻成员"><div id="plist" style="display:flex;flex-direction:column;gap:10px">'+peopleList()+'</div>';
+}
+function contactRows(p){
+  const c=PRIV[p.id];
+  if(!c)return '<div class="meta">联络资料只有本人、总管，以及同一团契的团长、副团长看得到。</div>';
+  const r=(k,v)=>'<dt>'+k+'</dt><dd>'+esc(v||"尚未填写")+'</dd>';
+  return '<dl class="info">'+r("电话",c.phone)+r("Email",c.email)+r("地址",c.address)+'</dl><b>紧急联系人</b><dl class="info">'+r("姓名",c.ec_name)+r("关系",c.ec_relation)+r("电话",c.ec_phone)+'</dl>';
+}
+function openPerson(id){
+  const p=person(id);if(!p)return;
+  sheet('<div class="row sp"><h2 style="margin:0">'+esc(p.name)+'</h2><button class="btn sm" data-close>关闭</button></div><div class="row">'+pillsOf(p)+'</div><div class="meta">所属：'+(groupsOf(p.id).length?esc(groupsOf(p.id).map(x=>gname(x.group_id)).join("、")):"尚未分配")+'</div>'+contactRows(p)+(isAdmin()?'<button class="btn" data-manage="'+p.id+'">'+(p.id===ME.id?'设定我的群组':'管理这位成员')+'</button>':''));
+}
+
+function vMe(){
+  const c=PRIV[ME.id]||{};
+  const r=(k,v)=>'<dt>'+k+'</dt><dd>'+esc(v||"尚未填写")+'</dd>';
+  return '<div><h2>我的资料</h2></div><div class="card"><div class="row"><div class="avatar" style="width:60px;height:60px;font-size:1.5em">'+esc(ME.name[0])+'</div><div class="grow"><b style="font-size:1.15em">'+esc(ME.name)+'</b><div class="meta">'+esc(ME.en_name||"")+'</div></div></div><div class="row">'+pillsOf(ME)+'</div></div>'+
+   '<div class="card"><div class="row sp"><b>基本资料</b><button class="btn sm pri" id="editMe">编辑资料</button></div><dl class="info">'+r("性别",ME.gender==="f"?"姐妹":"弟兄")+r("年龄层",ME.age_group)+r("电话",c.phone)+r("Email",c.email)+r("地址",c.address)+'</dl></div>'+
+   '<div class="card"><b>紧急联系人</b><dl class="info">'+r("姓名",c.ec_name)+r("关系",c.ec_relation)+r("电话",c.ec_phone)+'</dl></div>'+
+   '<div class="card"><div class="row sp"><b>不能服事的日期</b><button class="btn sm pri" id="addBlock">＋ 新增</button></div><div class="meta">登记后，排班时系统会提醒负责人，你也不能被人认领代班。</div>'+(BLOCK.filter(x=>x.user_id===ME.id).length?BLOCK.filter(x=>x.user_id===ME.id).sort((a,b)=>a.day<b.day?-1:1).map(x=>'<div class="row sp"><span>'+(+x.day.slice(5,7))+"月"+(+x.day.slice(8))+"日"+(x.note?" · "+esc(x.note):"")+'</span><button class="btn sm bad" data-rmblock="'+x.id+'">移除</button></div>').join(""):'<div class="meta">目前没有登记。</div>')+'</div>'+
+   '<div class="card"><b>帐号</b><button class="btn" id="chPw">更改密码</button><button class="btn bad" id="out">登出</button><div class="meta">网页版本：2.3（可以设定自己的群组）</div></div>';
+}
+function openEditMe(){
+  const c=PRIV[ME.id]||{};
+  const f=(id,l,v,t,ph)=>'<label>'+l+'<input id="'+id+'" type="'+(t||"text")+'" value="'+esc(v||"")+'"'+(ph?' placeholder="'+ph+'"':'')+' maxlength="120"></label>';
+  sheet('<h2 style="margin:0">编辑我的资料</h2>'+f("e-en","英文名（选填）",ME.en_name)+
+   '<label>性别<select id="e-g"><option value="m"'+(ME.gender==="m"?" selected":"")+'>弟兄</option><option value="f"'+(ME.gender==="f"?" selected":"")+'>姐妹</option></select></label>'+
+   '<label>年龄层<select id="e-age">'+AGES.map(a=>'<option'+(a===ME.age_group?" selected":"")+'>'+a+'</option>').join("")+'</select></label>'+
+   f("e-ph","电话",c.phone,"tel","例如：012-345 6789")+f("e-em","Email",c.email,"email","name@example.com")+f("e-ad","地址",c.address)+
+   '<b>紧急联系人</b>'+f("e-cn","姓名",c.ec_name)+f("e-cr","与你的关系",c.ec_relation,"text","例如：配偶、父亲")+f("e-cp","电话",c.ec_phone,"tel")+
+   '<div class="err" id="e-err"></div><div class="row"><button class="btn pri" id="e-save">保存</button><button class="btn" data-close>取消</button></div>');
+  $("#e-save").onclick=async()=>{
+    const em=$("#e-em").value.trim();
+    if(em&&!/^\S+@\S+\.\S+$/.test(em)){$("#e-err").textContent="Email 格式不对，请检查";return}
+    const b=$("#e-save");busy(b,true);
+    try{
+      await upd("profiles","id=eq."+ME.id,{en_name:$("#e-en").value.trim()||null,gender:$("#e-g").value,age_group:$("#e-age").value});
+      await upd("member_private","user_id=eq."+ME.id,{phone:$("#e-ph").value.trim(),email:em,address:$("#e-ad").value.trim(),ec_name:$("#e-cn").value.trim(),ec_relation:$("#e-cr").value.trim(),ec_phone:$("#e-cp").value.trim(),updated_at:new Date().toISOString()});
+      await loadAll();closeSheet();toast("资料已保存");render();
+    }catch(e){$("#e-err").textContent=friendly(e);busy(b,false)}
+  };
+}
+function openChangePw(){
+  sheet('<h2 style="margin:0">更改密码</h2><label>新密码（至少 8 个字）<input id="c-pw" type="password" autocomplete="new-password"></label><label>再输入一次<input id="c-pw2" type="password" autocomplete="new-password"></label><div class="err" id="c-err"></div><div class="row"><button class="btn pri" id="c-go">更改</button><button class="btn" data-close>取消</button></div>');
+  $("#c-go").onclick=async()=>{
+    const a=$("#c-pw").value;
+    if(a.length<8){$("#c-err").textContent="密码至少要 8 个字";return}
+    if(a!==$("#c-pw2").value){$("#c-err").textContent="两次输入的密码不一样";return}
+    const b=$("#c-go");busy(b,true);
+    try{await raw("/auth/v1/user",{method:"PUT",token:await token(),body:{password:a}});closeSheet();toast("密码已更改")}
+    catch(e){$("#c-err").textContent=friendly(e);busy(b,false)}
+  };
+}
+
+/* ============ 总管：审核与管理成员 ============ */
+async function audit(action,detail){try{await ins("audit_log",{actor:ME.id,action,detail})}catch(e){}}
+function openManage(id,isNew){
+  const p=isNew?PENDING.find(x=>x.id===id):person(id);if(!p)return;
+  const mine=GM.filter(x=>x.user_id===id);
+  const rows=GROUPS.map(g=>{const m=mine.find(x=>x.group_id===g.id);
+    return '<div class="card" style="padding:10px"><label class="chk"><input type="checkbox" data-g="'+g.id+'"'+(m?" checked":"")+'>'+esc(g.name)+'</label>'+(g.fellowship?'<label>职务<select data-gp="'+g.id+'"><option value="">一般成员</option><option'+(m&&m.post==="团长"?" selected":"")+'>团长</option><option'+(m&&m.post==="副团长"?" selected":"")+'>副团长</option></select></label>':'')+'</div>'}).join("");
+  sheet('<div class="row sp"><h2 style="margin:0">'+(isNew?"审核新会友":"管理成员")+'</h2><button class="btn sm" data-close>关闭</button></div><div><b>'+esc(p.name)+'</b> <span class="meta">'+idLabel(p)+(p.age_group?" · "+esc(p.age_group):"")+'</span></div>'+
+   '<label>身份<select id="m-id"><option value="member"'+(p.identity==="member"?" selected":"")+'>弟兄 / 姐妹</option><option value="elder"'+(p.identity==="elder"?" selected":"")+'>长老</option><option value="board"'+(p.identity==="board"?" selected":"")+'>理事</option></select></label>'+
+   '<b>所属群组</b>'+rows+
+   '<label class="chk"><input type="checkbox" id="m-admin"'+(p.role==="admin"?" checked":"")+'>总管（可以管理全部）</label>'+
+   '<div class="err" id="m-err"></div><div class="row"><button class="btn pri" id="m-save">'+(isNew?"批准并保存":"保存")+'</button>'+(isNew?'<button class="btn bad" id="m-rej">拒绝申请</button>':'<button class="btn bad" id="m-rm">停用这个帐号</button>')+'</div>'+(isNew||id===ME.id?'':'<button class="btn" id="m-pw">重设这位成员的密码</button>'));
+  const pwb=$("#m-pw");if(pwb)pwb.onclick=()=>{
+    sheet('<h2 style="margin:0">重设密码</h2><div>为 <b>'+esc(p.name)+'</b> 设一个临时密码（至少 8 个字）。请私下告诉对方，并请对方登入后到「我的资料」自己更改。</div><label>临时密码<input id="r-pw" type="text" autocomplete="off"></label><div class="err" id="r-err"></div><div class="row"><button class="btn pri" id="r-go">重设</button><button class="btn" data-close>取消</button></div>');
+    $("#r-go").onclick=async()=>{const v=$("#r-pw").value;if(v.length<8){$("#r-err").textContent="密码至少要 8 个字";return}
+      const b=$("#r-go");busy(b,true);
+      try{await raw("/functions/v1/member-admin",{method:"POST",token:await token(),body:{action:"reset_password",user_id:id,password:v}});await audit("重设密码",p.name);closeSheet();toast("密码已重设")}
+      catch(e){$("#r-err").textContent=friendly(e);busy(b,false)}};
+  };
+  $("#m-save").onclick=async()=>{
+    const b=$("#m-save");busy(b,true);
+    try{
+      const want={};document.querySelectorAll("[data-g]").forEach(c=>{if(c.checked){const s=document.querySelector('[data-gp="'+c.dataset.g+'"]');want[c.dataset.g]=(s&&s.value)||null}});
+      const patch={identity:$("#m-id").value,role:$("#m-admin").checked?"admin":"member"};
+      if(isNew)patch.status="active";
+      await upd("profiles","id=eq."+id,patch);
+      for(const m of mine){if(!(m.group_id in want))await del("group_members","user_id=eq."+id+"&group_id=eq."+m.group_id)}
+      const rowsUp=Object.keys(want).map(g=>({user_id:id,group_id:g,post:want[g]}));
+      if(rowsUp.length)await ins("group_members",rowsUp,{Prefer:"resolution=merge-duplicates,return=minimal"});
+      await audit(isNew?"批准新会友":"修改成员",p.name+"："+Object.keys(want).map(g=>gname(g)+(want[g]?"（"+want[g]+"）":"")).join("、")+(patch.role==="admin"?"；总管":""));
+      await loadAll();closeSheet();toast(isNew?"已批准":"已保存");render();
+    }catch(e){$("#m-err").textContent=friendly(e);busy(b,false)}
+  };
+  const stop=(btn,msg,okMsg,act)=>{if(!btn)return;btn.onclick=()=>{sheet('<h2 style="margin:0">确定吗？</h2><div>'+msg+'</div><div class="row"><button class="btn bad" id="y">确定</button><button class="btn" data-close>取消</button></div>');$("#y").onclick=async()=>{const b=$("#y");busy(b,true);try{await upd("profiles","id=eq."+id,{status:"removed"});await audit(act,p.name);await loadAll();closeSheet();toast(okMsg);render()}catch(e){toast(friendly(e));busy(b,false)}}}};
+  stop($("#m-rej"),"拒绝 <b>"+esc(p.name)+"</b> 的申请？对方将无法使用。","已拒绝","拒绝新会友");
+  stop($("#m-rm"),"停用 <b>"+esc(p.name)+"</b> 的帐号？对方将无法再登入，资料会保留。","已停用","停用成员");
+  if(id===ME.id){const a=$("#m-admin");if(a)a.disabled=true;const r=$("#m-rm");if(r)r.disabled=true}
+}
+
+/* ============ 排班（第二阶段） ============ */
+const ROLES=["报告","司琴","领唱","讲员","圣餐","媒体","招待"];
+const GCOL={worship:"#1f5b42",youth:"#2e5a88",teen:"#c85a32",kids:"#b7791f",prayer:"#6b4c8c"};
+const WD=["周日","周一","周二","周三","周四","周五","周六"];
+const pad=n=>String(n).padStart(2,"0");
+const fmtT=t=>{const d=new Date(t);return pad(d.getHours())+":"+pad(d.getMinutes())};
+const fmtD=t=>{const d=new Date(t);return (d.getMonth()+1)+"月"+d.getDate()+"日 "+WD[d.getDay()]};
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const nameOf=id=>{const p=person(id);return p?p.name:"（已离开）"};
+const grp=id=>GROUPS.find(g=>g.id===id)||{id,name:id,fellowship:false};
+const leads=gid=>GM.some(x=>x.user_id===ME.id&&x.group_id===gid&&x.post);
+const canEditGroup=gid=>isAdmin()||(grp(gid).fellowship&&leads(gid));
+const editableGroups=()=>GROUPS.filter(g=>canEditGroup(g.id));
+const activeS=s=>s.status!=="cancelled";
+const live=s=>s.assignments.filter(a=>a.status!=="absent");
+const isWorker=()=>!!ME&&(isAdmin()||GM.some(x=>x.user_id===ME.id&&x.post)||SCHED.some(s=>s.assignments.some(a=>a.user_id===ME.id)));
+const byRole=(a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role);
+const stPill=st=>st==="accepted"?'<span class="pill ok">已接受</span>':st==="absent"?'<span class="pill warn">要求更换</span>':'<span class="pill pend">待回复</span>';
+const waPhone=p=>{let d=String(p||"").replace(/\D/g,"");if(!d)return "";if(d[0]==="0")d="60"+d.slice(1);return d};
+const waLine=s=>"• "+fmtD(s.starts_at)+" "+fmtT(s.starts_at)+"–"+fmtT(s.ends_at)+" "+s.title+(s.location?"（"+s.location+"）":"")+"\n"+live(s).slice().sort(byRole).map(a=>"   "+a.role+"："+nameOf(a.user_id)).join("\n");
+const when=s=>fmtD(s.starts_at)+" "+fmtT(s.starts_at)+"–"+fmtT(s.ends_at);
+
+function clashesMap(){
+  const out={};
+  for(const a of SCHED){if(!activeS(a))continue;
+    for(const b of SCHED){if(a===b||!activeS(b))continue;
+      if(!(new Date(a.starts_at)<new Date(b.ends_at)&&new Date(a.ends_at)>new Date(b.starts_at)))continue;
+      const ua=new Set(live(a).map(x=>x.user_id)),ppl=[...new Set(live(b).map(x=>x.user_id))].filter(u=>ua.has(u));
+      const venue=a.location.trim()&&a.location.trim().toLowerCase()===b.location.trim().toLowerCase();
+      if(!ppl.length&&!venue)continue;
+      (out[a.id]=out[a.id]||[]).push((ppl.length?nameOf(ppl[0])+" 同时在【"+grp(b.group_id).name+"】"+fmtT(b.starts_at)+"–"+fmtT(b.ends_at)+" 服事":"")+(ppl.length&&venue?"；":"")+(venue?"场地「"+b.location+"」同时被占用":""));}
+    for(const u of new Set(live(a).map(x=>x.user_id))){if(BLOCK.some(k=>k.user_id===u&&k.day===dayKey(a.starts_at)))(out[a.id]=out[a.id]||[]).push(nameOf(u)+" 登记了这天不能服事")}}
+  return out;
+}
+
+function schedCard(s,cl){
+  const c=cl[s.id]||[],mgr=canEditGroup(s.group_id);
+  let h='<article class="card sched" style="border-left:6px solid '+(GCOL[s.group_id]||"var(--primary)")+'">';
+  h+='<div class="row sp"><div class="grow"><h3 style="margin:0;font-size:1.05em">'+esc(s.title)+'</h3><div class="meta">'+when(s)+(s.location?" · "+esc(s.location):"")+'</div></div>'+(c.length?'<span class="pill warn">⚠ 冲突</span>':'<span class="pill ok">无冲突</span>')+'</div>';
+  if(c.length)h+='<div class="meta" style="color:var(--warn)">'+c.map(esc).join("<br>")+'</div>';
+  if(s.notes)h+='<div class="meta">备注：'+esc(s.notes)+'</div>';
+  h+='<div class="roles" style="display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:8px">';
+  s.assignments.slice().sort(byRole).forEach(a=>{
+    const mine=a.user_id===ME.id,why=REASON[a.id];
+    h+='<div class="role" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="min-width:5.5em;font-weight:700">'+esc(a.role)+'</span><span class="grow">'+esc(nameOf(a.user_id))+(mine?"（我）":"")+'</span>'+stPill(a.status)+'</div>';
+    if(a.status==="absent")h+='<div class="meta" style="padding-left:6.2em">'+(why?"理由："+esc(why):"理由只有负责人看得到")+'</div>';
+    const b=[];
+    if(mine&&a.status==="pending")b.push('<button class="btn pri sm" data-accept="'+a.id+'">接受</button>');
+    if(mine&&a.status!=="absent")b.push('<button class="btn bad sm" data-absent="'+a.id+'">要求更换</button>');
+    if(a.status==="absent"&&!mine&&isWorker())b.push('<button class="btn pri sm" data-cover="'+a.id+'">我来代班</button>');
+    if(a.status==="absent"&&(mgr||mine))b.push('<button class="btn sm" data-wacover="'+a.id+'" data-s="'+s.id+'">📢 找代班（发到群组）</button>');
+    if(mgr&&!mine&&a.status!=="absent"&&PRIV[a.user_id]&&PRIV[a.user_id].phone)b.push('<button class="btn sm" data-wanudge="'+a.id+'" data-s="'+s.id+'">📲 提醒他</button>');
+    if(b.length)h+='<div class="row" style="padding-left:6.2em">'+b.join("")+'</div>';
+  });
+  h+='</div>';
+  if(mgr)h+='<div class="row sp"><span class="meta">'+(s.assignments.some(a=>a.status==="pending")?"有人还没回复":"")+'</span><button class="btn sm" data-sman="'+s.id+'">管理选项</button></div>';
+  return h+'</article>';
+}
+
+let FILTER="all";
+function vSched(){
+  const cl=clashesMap();
+  let list=SCHED.filter(s=>activeS(s)&&(FILTER==="all"||s.group_id===FILTER||(FILTER==="mine"&&s.assignments.some(a=>a.user_id===ME.id))));
+  let h='<div class="row sp"><div><h2>总时间表</h2><p class="sub">所有群组都看得到同一份</p></div>'+(editableGroups().length?'<button class="btn pri" id="btnAdd">＋ 排班</button>':'')+'</div>';
+  h+='<div class="row"><button class="btn sm" id="waWeek">分享本周时间表到 WhatsApp</button></div>';
+  h+='<div class="seg" style="overflow-x:auto"><button data-f="all" aria-pressed="'+(FILTER==="all")+'">全部</button><button data-f="mine" aria-pressed="'+(FILTER==="mine")+'">我的服事</button>'+GROUPS.map(g=>'<button data-f="'+g.id+'" aria-pressed="'+(FILTER===g.id)+'">'+esc(g.name)+'</button>').join("")+'</div>';
+  let last="";
+  for(const s of list){const d=fmtD(s.starts_at);if(d!==last){h+='<div style="font-weight:700;color:var(--primary);margin-top:6px">'+d+'</div>';last=d}h+=schedCard(s,cl)}
+  if(!list.length)h+='<div class="card meta">没有符合的服事。</div>';
+  return h;
+}
+
+/* ---- 分享到 WhatsApp ---- */
+function openWA(title,text){
+  const url="https://wa.me/?text="+encodeURIComponent(text);
+  sheet('<div class="row sp"><h2 style="margin:0">分享到 WhatsApp</h2><button class="btn sm" data-close>关闭</button></div><div class="meta">'+esc(title)+'</div><div id="wat" style="background:#d9fdd3;color:#111;border-radius:12px;padding:12px 14px;white-space:pre-wrap;line-height:1.6">'+esc(text)+'</div><a class="btn" style="background:#25d366;color:#fff;border-color:#25d366;text-decoration:none;text-align:center" href="'+url+'" target="_blank" rel="noopener">打开 WhatsApp，选择群组</a><button class="btn" id="wacp">复制文字</button><div class="meta">按下后 WhatsApp 会打开，选好群组再按发送即可。</div>');
+  $("#wacp").onclick=()=>{try{navigator.clipboard.writeText(text).then(()=>toast("已复制"),()=>toast("请长按文字复制"))}catch(e){toast("请长按文字复制")}};
+}
+function openWAPerson(title,phone,text){
+  const url="https://wa.me/"+waPhone(phone)+"?text="+encodeURIComponent(text);
+  sheet('<div class="row sp"><h2 style="margin:0">提醒他</h2><button class="btn sm" data-close>关闭</button></div><div class="meta">'+esc(title)+'</div><div style="background:#d9fdd3;color:#111;border-radius:12px;padding:12px 14px;white-space:pre-wrap;line-height:1.6">'+esc(text)+'</div><a class="btn" style="background:#25d366;color:#fff;border-color:#25d366;text-decoration:none;text-align:center" href="'+url+'" target="_blank" rel="noopener">打开 WhatsApp 对话</a>');
+}
+function coverText(s,a){return "【找代班】"+when(s)+" "+s.title+"「"+a.role+"」（"+nameOf(a.user_id)+"）需要代班，有空的请到「蒲种福音堂」网页按「我来代班」，谢谢！"}
+
+/* ---- 通知 ---- */
+async function notifyUsers(uids,kind,title,body,sid){
+  const to=[...new Set(uids)].filter(u=>u&&u!==ME.id);if(!to.length)return;
+  try{await ins("notifications",to.map(u=>({user_id:u,kind,title,body,schedule_id:sid||null,created_by:ME.id})),{Prefer:"return=minimal"})}catch(e){}
+}
+function openBell(){
+  const l=NOTES;
+  sheet('<div class="row sp"><h2 style="margin:0">通知</h2><button class="btn sm" data-close>关闭</button></div>'+(l.length?l.map(n=>'<div class="card" style="gap:4px'+(n.read_at?"":";border-color:var(--primary)")+'"><div class="row sp"><b>'+esc(n.title)+'</b>'+(n.read_at?"":'<span class="pill pend">新</span>')+'</div><div>'+esc(n.body)+'</div><div class="meta">'+fmtD(n.created_at)+" "+fmtT(n.created_at)+'</div></div>').join(""):'<div class="card meta">目前没有通知。</div>'));
+  const un=l.filter(n=>!n.read_at).map(n=>n.id);
+  if(un.length)rest("notifications?id=in.("+un.join(",")+")",{method:"PATCH",body:{read_at:new Date().toISOString()}}).then(()=>{NOTES.forEach(n=>{if(!n.read_at)n.read_at=new Date().toISOString()});nav()}).catch(()=>{});
+}
+
+/* ---- 接受 / 要求更换 / 代班 ---- */
+async function act(fn,msg){try{await fn();await loadAll();render();if(msg)toast(msg)}catch(e){toast(friendly(e))}}
+function openAbsent(aid){
+  const s=SCHED.find(x=>x.assignments.some(a=>a.id===aid)),a=s.assignments.find(x=>x.id===aid);
+  sheet('<h2 style="margin:0">要求更换</h2><div>'+esc(s.title)+" · <b>"+esc(a.role)+'</b></div><div class="meta">'+when(s)+'</div><label>原因（必填）<textarea id="ar" maxlength="300" placeholder="例如：身体不适、临时出差"></textarea></label><div class="meta">理由只有负责人和你自己看得到。</div><div class="err" id="ar-err"></div><div class="row"><button class="btn bad" id="asend">提交更换</button><button class="btn" data-close>取消</button></div>');
+  $("#asend").onclick=async()=>{const r=$("#ar").value.trim();if(!r){$("#ar-err").textContent="请填写原因";return}
+    const b=$("#asend");busy(b,true);
+    try{await rpc("request_replacement",{p_id:aid,p_reason:r});await loadAll();closeSheet();render();toast("已提交，系统会通知负责人")}catch(e){$("#ar-err").textContent=friendly(e);busy(b,false)}};
+}
+
+/* ---- 新增 / 修改排班 ---- */
+function openAdd(edit){
+  const gs=editableGroups();if(!gs.length){toast("你没有排班权限");return}
+  const picks={};ROLES.forEach(r=>picks[r]=[]);
+  if(edit)edit.assignments.forEach(a=>{if(picks[a.role])picks[a.role].push(a.user_id)});
+  const d0=edit?new Date(edit.starts_at):new Date(Date.now()+7*864e5),d1=edit?new Date(edit.ends_at):null;
+  const dv=dayKey(d0),tv=edit?fmtT(edit.starts_at):"09:30",ev=edit?fmtT(edit.ends_at):"11:00";
+  sheet('<h2 style="margin:0">'+(edit?"修改排班":"新增排班")+'</h2>'+
+   '<label>群组<select id="fg">'+gs.map(g=>'<option value="'+g.id+'"'+(edit&&edit.group_id===g.id?" selected":"")+'>'+esc(g.name)+'</option>').join("")+'</select></label>'+
+   '<label>名称<input id="ft" maxlength="60" value="'+esc(edit?edit.title:"")+'" placeholder="例如：主日敬拜 · 崇拜"></label>'+
+   '<label>日期<input id="fd" type="date" value="'+dv+'"></label><div class="row"><label class="grow">开始<input id="fs" type="time" value="'+tv+'"></label><label class="grow">结束<input id="fe" type="time" value="'+ev+'"></label></div>'+
+   '<label>地点<input id="fl" maxlength="60" value="'+esc(edit?edit.location:"")+'" placeholder="例如：主堂"></label><label>备注（选填）<input id="fn" maxlength="200" value="'+esc(edit?edit.notes:"")+'"></label>'+
+   '<b>服事岗位与同工</b><div id="roleBox" style="display:flex;flex-direction:column;gap:8px"></div><div id="clashBox"></div><div class="err" id="f-err"></div>'+
+   '<div class="row"><button class="btn pri" id="fsave">'+(edit?"保存并通知同工":"保存并通知同工")+'</button>'+(edit?'<button class="btn" id="fsave2">只保存，不通知</button>':'')+'<button class="btn" data-close>取消</button></div>');
+  const times=()=>{const d=$("#fd").value,s=$("#fs").value,e=$("#fe").value;if(!d||!s||!e)return null;const[y,m,dd]=d.split("-").map(Number),[sh,sm]=s.split(":").map(Number),[eh,em]=e.split(":").map(Number);return{s:new Date(y,m-1,dd,sh,sm),e:new Date(y,m-1,dd,eh,em)}};
+  const pairs=()=>ROLES.flatMap(r=>picks[r].map(u=>[u,r]));
+  const check=()=>{const t=times();const found=[];if(t&&t.e>t.s){
+      for(const o of SCHED){if((edit&&o.id===edit.id)||!activeS(o)||!(t.s<new Date(o.ends_at)&&t.e>new Date(o.starts_at)))continue;
+        const ppl=[...new Set(pairs().map(p=>p[0]))].filter(u=>live(o).some(a=>a.user_id===u));
+        if(ppl.length)found.push(nameOf(ppl[0])+" 在 "+fmtT(o.starts_at)+"–"+fmtT(o.ends_at)+" 已有【"+grp(o.group_id).name+"】"+o.title);
+        const lo=$("#fl").value.trim().toLowerCase();if(lo&&lo===o.location.trim().toLowerCase())found.push("场地「"+o.location+"」已被【"+grp(o.group_id).name+"】使用")}
+      const dk=dayKey(t.s);[...new Set(pairs().map(p=>p[0]))].forEach(u=>{if(BLOCK.some(k=>k.user_id===u&&k.day===dk))found.push(nameOf(u)+" 登记了这天不能服事")})}
+    $("#clashBox").innerHTML=found.length?'<div class="card alert"><b>⚠ 发现冲突</b>'+found.map(f=>'<div class="meta" style="color:var(--warn)">'+esc(f)+'</div>').join("")+'<span class="meta">仍可保存。</span></div>':'<div class="card"><span class="pill ok">目前没有冲突</span></div>'};
+  const drawRoles=()=>{
+    $("#roleBox").innerHTML=ROLES.map(r=>{const left=PEOPLE.filter(m=>!picks[r].includes(m.id));
+      return '<div class="card" style="padding:10px;gap:6px"><b>'+r+'</b><div class="row">'+(picks[r].length?picks[r].map(u=>'<span class="pill ok">'+esc(nameOf(u))+' <button type="button" class="lnkx" data-rm="'+r+':'+u+'" aria-label="移除" style="border:0;background:none;color:inherit;font-weight:700;padding:0 0 0 4px">✕</button></span>').join(""):'<span class="meta">还没有人</span>')+'</div><select data-add="'+r+'" aria-label="为'+r+'加人"><option value="">＋ 加人</option>'+left.map(m=>'<option value="'+m.id+'">'+esc(m.name)+'</option>').join("")+'</select></div>'}).join("");
+    check()};
+  drawRoles();
+  const sh=$(".sheet");
+  sh.addEventListener("change",e=>{const el=e.target;if(el.dataset.add){if(el.value){picks[el.dataset.add].push(el.value);drawRoles()}}else check()});
+  sh.addEventListener("input",e=>{if(e.target.id==="fl")check()});
+  sh.addEventListener("click",e=>{const b=e.target.closest("button[data-rm]");if(!b)return;e.stopPropagation();const[r,u]=b.dataset.rm.split(":");picks[r]=picks[r].filter(x=>x!==u);drawRoles()});
+  const save=async tell=>{
+    const t=times(),title=$("#ft").value.trim();
+    if(!title){$("#f-err").textContent="请填写名称";return}
+    if(!t||!(t.e>t.s)){$("#f-err").textContent="请检查日期和时间（结束要晚过开始）";return}
+    const row={group_id:$("#fg").value,title,location:$("#fl").value.trim(),notes:$("#fn").value.trim(),starts_at:t.s.toISOString(),ends_at:t.e.toISOString()};
+    const btns=[$("#fsave"),$("#fsave2")];btns.forEach(b=>b&&(b.disabled=true));
+    try{
+      let sid,added=[];
+      if(edit){
+        await upd("schedules","id=eq."+edit.id,row);sid=edit.id;
+        const want=pairs(),have=edit.assignments;
+        const rm=have.filter(a=>!want.some(p=>p[0]===a.user_id&&p[1]===a.role));
+        if(rm.length)await del("assignments","id=in.("+rm.map(a=>a.id).join(",")+")");
+        added=want.filter(p=>!have.some(a=>a.user_id===p[0]&&a.role===p[1]));
+      }else{
+        row.coord=ME.id;row.created_by=ME.id;const r=await ins("schedules",row);sid=r[0].id;added=pairs();
+      }
+      if(added.length)await ins("assignments",added.map(p=>({schedule_id:sid,user_id:p[0],role:p[1]})),{Prefer:"return=minimal"});
+      if(tell){
+        const all=pairs();
+        if(edit)await notifyUsers(all.map(p=>p[0]),"notice","排班已更新："+title,when({starts_at:row.starts_at,ends_at:row.ends_at})+"。请确认您的服事岗位。",sid);
+        else await notifyUsers(all.map(p=>p[0]),"assign","新的服事："+title,when({starts_at:row.starts_at,ends_at:row.ends_at})+"。请到时间表接受，或要求更换。",sid);
+      }
+      await loadAll();closeSheet();render();toast(tell?"已保存，并已通知同工":"已保存");
+    }catch(e){$("#f-err").textContent=friendly(e);btns.forEach(b=>b&&(b.disabled=false))}
+  };
+  $("#fsave").onclick=()=>save(true);const f2=$("#fsave2");if(f2)f2.onclick=()=>save(false);
+}
+function openSMan(sid){
+  const s=SCHED.find(x=>x.id===sid);
+  sheet('<div class="row sp"><h2 style="margin:0">管理这次服事</h2><button class="btn sm" data-close>关闭</button></div><div class="meta">'+esc(s.title)+" · "+when(s)+'</div>'+
+   '<button class="btn" data-sedit="'+sid+'">修改排班</button><button class="btn" data-sresend="'+sid+'">重发通知给同工</button><button class="btn" data-sshare="'+sid+'">分享到 WhatsApp 群</button><button class="btn bad" data-scancel="'+sid+'">取消这次排班</button>');
+}
+function askSure(msg,yes,label){
+  sheet('<h2 style="margin:0">确定吗？</h2><div>'+msg+'</div><div class="row"><button class="btn bad" id="y">'+(label||"确定")+'</button><button class="btn" data-close>取消</button></div>');
+  $("#y").onclick=async()=>{const b=$("#y");busy(b,true);try{await yes();closeSheet()}catch(e){toast(friendly(e));busy(b,false)}};
+}
+
+/* ---- 不能服事的日期 ---- */
+function openBlock(){
+  sheet('<div class="row sp"><h2 style="margin:0">登记不能服事的日期</h2><button class="btn sm" data-close>关闭</button></div><label>日期<input id="bd" type="date" min="'+dayKey(Date.now())+'"></label><label>原因（选填）<input id="bn" maxlength="40" placeholder="例如：出差、考试"></label><div class="meta">登记后，排班时系统会提醒负责人，你也不能被人认领代班。</div><div class="err" id="b-err"></div><div class="row"><button class="btn pri" id="bsave">保存</button><button class="btn" data-close>取消</button></div>');
+  $("#bsave").onclick=async()=>{const d=$("#bd").value;if(!d){$("#b-err").textContent="请选择日期";return}
+    if(BLOCK.some(b=>b.user_id===ME.id&&b.day===d)){$("#b-err").textContent="这天已经登记过了";return}
+    const b=$("#bsave");busy(b,true);
+    try{await ins("blockouts",{user_id:ME.id,day:d,note:$("#bn").value.trim()});await loadAll();
+      const has=SCHED.some(x=>activeS(x)&&dayKey(x.starts_at)===d&&x.assignments.some(a=>a.user_id===ME.id&&a.status!=="absent"));
+      closeSheet();render();toast(has?"已登记。注意：你这天已有服事，请到时间表按「要求更换」":"已登记")}
+    catch(e){$("#b-err").textContent=friendly(e);busy(b,false)}};
+}
+
+/* ============ 事件 ============ */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.tab){TAB=t.dataset.tab;render();window.scrollTo(0,0);return}
+  if(t.dataset.person){openPerson(t.dataset.person);return}
+  if(t.dataset.approve){openManage(t.dataset.approve,true);return}
+  if(t.dataset.manage){openManage(t.dataset.manage,false);return}
+  if(t.id==="editMe"){openEditMe();return}
+  if(t.id==="btnBell"){openBell();return}
+  if(t.id==="btnAdd"){openAdd();return}
+  if(t.id==="addBlock"){openBlock();return}
+  if(t.dataset.f){FILTER=t.dataset.f;render();return}
+  if(t.dataset.rmblock){act(()=>del("blockouts","id=eq."+t.dataset.rmblock),"已移除");return}
+  if(t.dataset.accept){act(()=>rpc("accept_assignment",{p_id:t.dataset.accept}),"已接受");return}
+  if(t.dataset.absent){openAbsent(t.dataset.absent);return}
+  if(t.dataset.cover){act(()=>rpc("take_cover",{p_id:t.dataset.cover}),"已接手代班，谢谢！");return}
+  if(t.dataset.wacover){const s=SCHED.find(x=>x.id===t.dataset.s),a=s.assignments.find(x=>x.id===t.dataset.wacover);openWA("找代班",coverText(s,a));return}
+  if(t.dataset.wanudge){const s=SCHED.find(x=>x.id===t.dataset.s),a=s.assignments.find(x=>x.id===t.dataset.wanudge);openWAPerson(nameOf(a.user_id),PRIV[a.user_id].phone,"平安 "+nameOf(a.user_id)+"！提醒你："+when(s)+" 的"+s.title+"「"+a.role+"」服事。请到「蒲种福音堂」网页确认，或告诉我需要更换。谢谢！");return}
+  if(t.dataset.sman){openSMan(t.dataset.sman);return}
+  if(t.dataset.sedit){closeSheet();openAdd(SCHED.find(x=>x.id===t.dataset.sedit));return}
+  if(t.dataset.sresend){const s=SCHED.find(x=>x.id===t.dataset.sresend);notifyUsers(s.assignments.map(a=>a.user_id),"remind","服事提醒（重发）："+s.title,when(s)+"。请确认您的服事岗位。",s.id).then(()=>{closeSheet();toast("已重发通知")});return}
+  if(t.dataset.sshare){const s=SCHED.find(x=>x.id===t.dataset.sshare);openWA(s.title,"📅 服事安排\n\n"+waLine(s)+"\n\n请到「蒲种福音堂」网页确认或要求更换。");return}
+  if(t.dataset.scancel){const s=SCHED.find(x=>x.id===t.dataset.scancel);askSure("取消「<b>"+esc(s.title)+"</b>」？同工会收到通知。",async()=>{await notifyUsers(s.assignments.map(a=>a.user_id),"notice","排班已取消："+s.title,when(s)+" 这次服事已取消，不需要服事了。",null);await del("schedules","id=eq."+s.id);await audit("取消排班",s.title+"，"+when(s));await loadAll();render();toast("已取消，并已通知同工")},"取消排班");return}
+  if(t.id==="waWeek"){const a=Date.now()-36e5,b=a+7*864e5,l=SCHED.filter(x=>activeS(x)&&new Date(x.starts_at).getTime()>=a&&new Date(x.starts_at).getTime()<b);if(!l.length){toast("本周没有排班");return}openWA("本周时间表（"+l.length+" 项）","📅 本周教会服事安排\n\n"+l.map(waLine).join("\n\n")+"\n\n详情和更换请到「蒲种福音堂」网页查看。");return}
+  if(t.id==="chPw"){openChangePw();return}
+  if(t.id==="out"){logout();return}
+  if(t.id==="btnSize"){document.body.classList.toggle("big");try{localStorage.setItem("pgc_big",document.body.classList.contains("big")?"1":"")}catch(x){}return}
+});
+try{if(localStorage.getItem("pgc_big"))document.body.classList.add("big")}catch(e){}
+
+async function logout(){
+  try{if(SES)await raw("/auth/v1/logout",{method:"POST",token:SES.access_token})}catch(e){}
+  saveSes(null);ME=null;TAB="home";closeSheet();vAuth("login");
+}
+async function start(){
+  $("#view").innerHTML='<div class="spin">载入中……</div>';
+  if(!SES){ME=null;vAuth("login");return}
+  try{await loadAll();render()}
+  catch(e){
+    if(e.status===401||e.status===400||/no session|Invalid Refresh Token|refresh_token/i.test(e.message||"")){saveSes(null);ME=null;vAuth("login");return}
+    $("#view").innerHTML='<div class="card center"><p>'+esc(friendly(e))+'</p><button class="btn pri" id="retry">重试</button></div>';
+    $("#retry").onclick=start;
+  }
+}
+start();
+})();
+</script>
+</body>
+</html>
