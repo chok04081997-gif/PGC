@@ -193,7 +193,9 @@ function vAuth(mode){
     else if(!pw){err.textContent="请填写密码";return}
     const btn=$("#a-go");busy(btn,true);
     try{
-      const email=await emailFor(name);
+      let email=null;
+      if(!reg){try{const r=await raw("/rest/v1/rpc/login_email",{method:"POST",body:{p_name:name}});if(typeof r==="string"&&r)email=r}catch(e){}}
+      if(!email)email=await emailFor(name);
       if(reg)await raw("/functions/v1/member-admin",{method:"POST",body:{action:"register",name,password:pw,gender:$("#a-g").value,age_group:$("#a-age").value}});
       const j=await raw("/auth/v1/token?grant_type=password",{method:"POST",body:{email,password:pw}});
       setSession(j);await start();
@@ -273,7 +275,7 @@ function vMe(){
    '<div class="card"><div class="row sp"><b>基本资料</b><button class="btn sm pri" id="editMe">编辑资料</button></div><dl class="info">'+r("性别",ME.gender==="f"?"姐妹":"弟兄")+r("年龄层",ME.age_group)+r("电话",c.phone)+r("Email",c.email)+r("地址",c.address)+'</dl></div>'+
    '<div class="card"><b>紧急联系人</b><dl class="info">'+r("姓名",c.ec_name)+r("关系",c.ec_relation)+r("电话",c.ec_phone)+'</dl></div>'+
    '<div class="card"><div class="row sp"><b>不能服事的日期</b><button class="btn sm pri" id="addBlock">＋ 新增</button></div><div class="meta">登记后，排班时系统会提醒负责人，你也不能被人认领代班。</div>'+(BLOCK.filter(x=>x.user_id===ME.id).length?BLOCK.filter(x=>x.user_id===ME.id).sort((a,b)=>a.day<b.day?-1:1).map(x=>'<div class="row sp"><span>'+(+x.day.slice(5,7))+"月"+(+x.day.slice(8))+"日"+(x.note?" · "+esc(x.note):"")+'</span><button class="btn sm bad" data-rmblock="'+x.id+'">移除</button></div>').join(""):'<div class="meta">目前没有登记。</div>')+'</div>'+
-   '<div class="card"><b>帐号</b><button class="btn" id="chPw">更改密码</button><button class="btn bad" id="out">登出</button><div class="meta">网页版本：2.3（可以设定自己的群组）</div></div>';
+   '<div class="card"><b>帐号</b><button class="btn" id="chPw">更改密码</button><button class="btn bad" id="out">登出</button><div class="meta">网页版本：2.4（登入更宽松，不怕空格和大小写）</div></div>';
 }
 function openEditMe(){
   const c=PRIV[ME.id]||{};
